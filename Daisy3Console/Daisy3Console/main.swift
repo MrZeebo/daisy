@@ -170,6 +170,8 @@ func performTests() {
     secondSentence.addWord("echo?");
     
     printTest("numMatches 3 matches with punc", testSentence.numMatches(secondSentence) == 3);
+    
+    //test
 }
 
 
