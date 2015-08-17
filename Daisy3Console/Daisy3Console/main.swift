@@ -171,7 +171,7 @@ func performTests() {
     
     printTest("numMatches 3 matches with punc", testSentence.numMatches(secondSentence) == 3);
     
-    //test
+    //test blah
 }
 
 
