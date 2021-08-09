@@ -18,7 +18,7 @@ class Sentence {
         return words;
     }
     
-    func setNotGreat(var val :Bool) {
+    func setNotGreat(val :Bool) {
         notGreat = val;
     }
     
@@ -33,7 +33,7 @@ class Sentence {
     
     func addSentence(s : Sentence) {
         for w in s.getWords() {
-            addWord(w);
+            addWord(word: w);
         }
     }
     
@@ -48,9 +48,9 @@ class Sentence {
     }
     
     func getLengthOfString() -> Int {
-        var s = getString();
+        let s = getString();
         
-        return count(s);
+        return s.count;
     }
     
     func clear() {
@@ -64,15 +64,18 @@ class Sentence {
     func getThreeWords(start : Int) -> Sentence {
         // Return three words starting at the given position
         // (or until the end of the sentence)
-        var retVal = Sentence();
-        for var i = 0; i < 3 && i+start < words.count; i++ {
-            retVal.addWord(words[i+start]);
-        }
+        let retVal = Sentence();
+        var i = 0;
+       while (i < 3 && i+start < words.count) {
+          retVal.addWord(word: words[i+start]);
+        
+          i += 1;
+        } ;
         
         // If less than 3, add 3 empty words, just so that we are actually
         // returning 3 words
         while (retVal.length() < 3) {
-            retVal.addWord("");
+            retVal.addWord(word: "");
         }
         
         return retVal;
@@ -82,10 +85,10 @@ class Sentence {
         if (words.count < 2 || s.words.count < 2) {
             return false;
         } else {
-            var s1 = words[words.count - 2];
-            var s2 = words[words.count - 1];
-            var t1 = s.words[s.words.count - 2];
-            var t2 = s.words[s.words.count - 1];
+            let s1 = words[words.count - 2];
+            let s2 = words[words.count - 1];
+            let t1 = s.words[s.words.count - 2];
+            let t2 = s.words[s.words.count - 1];
             
             return s1 == t1 && s2 == t2;
         }
@@ -94,10 +97,10 @@ class Sentence {
     // Return a given string without punctuation
     func clean(w : String) -> String {
         var retVal  = "";
-    
-        for var i = 0; i < count(w); i++ {
-            if (!isPunc(w[advance(w.startIndex, i)])) {
-                retVal.append(w[advance(w.startIndex, i)]);
+        
+        for char in w {
+            if (!isPunc(c: char)) {
+                retVal.append(char);
             }
         }
         
@@ -121,8 +124,8 @@ class Sentence {
             // Loop over all words in the given sentence, looking for a match...
             for w2 in s.getWords() {
                 // If find a match, increment count and move onto next
-                if (clean(w) == clean(w2)) {
-                    matches++;
+                if (clean(w: w) == clean(w: w2)) {
+                    matches += 1;
                     break;
                 }
                
@@ -165,10 +168,10 @@ class Daisy {
     // Compares the current time against the "start time" to see if > 5 seconds have passed
     func tooLong() -> Bool {
         // Get the current time
-        var now = NSDate();
+        let now = NSDate();
         
         // Get the difference, in seconds
-        var secondsElapsed = now.timeIntervalSinceDate(startTime);
+        let secondsElapsed = now.timeIntervalSince(startTime as Date);
         
         var retVal = false;
         
@@ -181,17 +184,17 @@ class Daisy {
     
     private func parse(input :String) -> Sentence {
         // Parse the user input into a sentence
-        var retVal = Sentence();
+        let retVal = Sentence();
         
         // trim off newlines
-        var newString = input.stringByTrimmingCharactersInSet(NSCharacterSet.newlineCharacterSet());
+        let newString = input.trimmingCharacters(in: NSCharacterSet.newlines);
         
         // split by spaces
-        var split = newString.componentsSeparatedByString(" ");
+        let split = newString.components(separatedBy: " ");
         
         
         for  s in split {
-            retVal.addWord(s);
+            retVal.addWord(word: s);
         }
         
         return retVal;
@@ -209,10 +212,10 @@ class Daisy {
         
         for sentence in memory {
             for word in sentence.getWords() {
-                totalWords++;
+                totalWords += 1;
                 
-                if searchWord.uppercaseString == word.uppercaseString {
-                    occurrencesOfWord++;
+                if searchWord.uppercased() == word.uppercased() {
+                    occurrencesOfWord += 1;
                 }
                 
             }
@@ -232,7 +235,7 @@ class Daisy {
         // percent occurrence is for each word, and what the lowest overall is
         var lowestPercent = 101;
         for word in sentence.getWords() {
-            var pct = percent(word);
+            let pct = percent(searchWord: word);
             
             if (pct < lowestPercent) {
                 lowestPercent = pct;
@@ -240,10 +243,10 @@ class Daisy {
         }
         
         // Start creating a keyword sentence by starting it with the last subjects
-        var keywords = Sentence();
+        let keywords = Sentence();
         
         for sub in lastSubs.getWords() {
-            keywords.addWord(sub);
+            keywords.addWord(word: sub);
         }
         
         // Clear the last subjects list
@@ -254,11 +257,11 @@ class Daisy {
         // add it to the keyword list AND to the last subjects list (for the
         // benefit of the next sentence)
         for word in sentence.getWords() {
-            var pct = percent(word);
+            let pct = percent(searchWord: word);
             
             if (pct == lowestPercent) {
-                keywords.addWord(word);
-                lastSubs.addWord(word);
+                keywords.addWord(word: word);
+                lastSubs.addWord(word: word);
             }
         }
         
@@ -282,16 +285,16 @@ class Daisy {
 
             
             // maximum number of possible sentences to consider
-            var possibleMax = 10;
+            let possibleMax = 10;
             
             // list of all possible sentences (those with > 0 matches)
-            var possible = [Sentence](count: possibleMax, repeatedValue: Sentence())
+            var possible = [Sentence](repeating: Sentence(), count: possibleMax )
             
             // for each sentence in possible[], the # of matching words
-            var matches = [Int](count: possibleMax, repeatedValue: 0);
+            var matches = [Int]( repeating: 0, count: possibleMax);
             
-            do {
-                do {
+            repeat {
+                repeat {
                     if (totalSent >= buffer.count) {
                         // If we've already used all of our pre-generated buffer sentences, then generate a new random one using Response
                         possible[0] = response();
@@ -300,11 +303,11 @@ class Daisy {
                         possible[0] = buffer[totalSent];
                     }
                 
-                    totalSent++;
+                    totalSent += 1;
                 
             
                     // Either way, compare this sentence to our keywords list, count the overlap (cleanly, ignoring punctuation)
-                    count = possible[0].numMatches(keywords);
+                    count = possible[0].numMatches(s: keywords);
                     
                     // Loop if no match, until we either get > 0 matches or too much time has passed (TooLong)
 
@@ -316,32 +319,38 @@ class Daisy {
             
                 // If longer than 70 characters, flag as possibly too long
                 if (possible[created].getLengthOfString() > 70) {
-                    possible[created].setNotGreat(true);
+                    possible[created].setNotGreat(val: true);
                 }
             
                 // Also, remember what the # of matching words was for this sentence
                 matches[created] = count;
                 
-                created++;
+                created += 1;
             
             // Rpeat until we've generate the desired number of matches (PossibleMax) or too much time has passed (TooLong)
             } while (created < possibleMax && !tooLong());
             // If it gets too be too much time, we'll just go with what we have...
             // When done, find the sentence with the highest # of matching words
             var highestMatchIndex = 1;
-            for var i = 1; i < matches.count; i++ {
+            var i = 1;
+            while (i < matches.count) {
                 if matches[i] > matches[highestMatchIndex] {
                     highestMatchIndex = i;
                 }
-            }
+                
+                i += 1;
+            } ;
             
             if possible[highestMatchIndex].isNotGreat() {
                 // If this was flagged as too long, then see if there exists a second-best sentence that isn't flagged, use that instead
                 
                 // loop from 1 until the 2nd highest number of matches
-                for var l = 1;  l < matches[highestMatchIndex]; l++ {
+                var l = 1;
+                
+                while (l < matches[highestMatchIndex]) {
                     // loop over each created sentence
-                    for var l2 = 1; l2 < created; l2++ {
+                    var l2 = 1;
+                    while (l2 < created) {
                         // If this sentence has that number of matches and is
                         // not flagged as too long...
                         if (matches[l2] == l && !possible[l2].isNotGreat()) {
@@ -351,11 +360,14 @@ class Daisy {
                             // (we'll keep looping, so we'll end up remember whatever
                             // the highest-matching one is)
                         }
-                    }
-                }
-            }
-        
+                        
+                        l2 += 1;
+                    } ;
+                    
+                    l += 1;
+                } ;
 
+            }
         
             // Return the selected sentence
             retVal = possible[count];
@@ -373,33 +385,38 @@ class Daisy {
         var count = 0;
         for s in memory {
             for w in s.getWords() {
-                if w.uppercaseString == lastWord.uppercaseString {
-                    count++;
+                if w.uppercased() == lastWord.uppercased() {
+                    count += 1;
                 }
             }
         }
         
         // Pick a random one of those occurrences
-        var target = Int(arc4random_uniform(UInt32(count)));
+        let target = Int(arc4random_uniform(UInt32(count)));
     
         
         // Now loop back to that instance
         var i = 0;
         outer_loop: for s in memory {
-            for var j = 0; j < s.getWords().count; j++ {
-                var w = s.getWords()[j];
+            var j = 0;
             
-                if w.uppercaseString == lastWord.uppercaseString {
+            while (j < s.getWords().count) {
+                let w = s.getWords()[j];
+            
+                if w.uppercased() == lastWord.uppercased() {
                     if (i == target) {
                         // found it!
-                        retVal = s.getThreeWords(j+1);
+                        retVal = s.getThreeWords(start: j+1);
                         
                         break outer_loop;
                     } else {
-                        i++;
+                        i += 1;
                     }
                 }
-            }
+                
+                j += 1;
+            } ;
+
         }
         return retVal;
     }
@@ -407,15 +424,20 @@ class Daisy {
     /* Iterate over the sentence, looking for the A B A pattern.  That's not a good
      * pattern, so mark this sentence as not good if it appears */
 
-    func checkNotGreat(var s :Sentence) {
-        for var i = 0; i+2 < s.getWords().count; i++ {
-            var w1 = s.getWords()[i];
-            var w2 = s.getWords()[i+2];
+    func checkNotGreat(s :Sentence) {
+        var i = 0;
+        
+        while (i+2 < s.getWords().count) {
+            let w1 = s.getWords()[i];
+            let w2 = s.getWords()[i+2];
             
             if (w1 == w2) {
-                s.setNotGreat(true);
+                s.setNotGreat(val: true);
             }
-        }
+            
+            i += 1;
+        } ;
+
     }
     
     func terminator(s : Sentence) -> Bool {
@@ -430,7 +452,7 @@ class Daisy {
         } else {
             // Iterate over each sentence....
             for m in memory {
-                if m.lastTwoWordsMatch(s) {
+                if m.lastTwoWordsMatch(s: s) {
                     return true;
                 }
             }
@@ -446,15 +468,15 @@ class Daisy {
         if (memory.count > 0) {
           
             
-            var sentCount = memory.count;
+            let sentCount = memory.count;
             
             // Pick a random sentence
-            var loop = Int(arc4random_uniform(UInt32(sentCount)));
+            let loop = Int(arc4random_uniform(UInt32(sentCount)));
             
-            var firstSentence = memory[loop];
+            let firstSentence = memory[loop];
            
             
-            var threeWords = firstSentence.getThreeWords(0);
+            var threeWords = firstSentence.getThreeWords(start: 0);
             
             
             tempResponse = threeWords;
@@ -462,19 +484,19 @@ class Daisy {
             // flag to indicate the we've encountered a valid end-of-sentence
             var terminate = false;
             
-            do {
-                var lastWord = threeWords.getWords()[2];
+            repeat {
+                let lastWord = threeWords.getWords()[2];
               
                 
                 // get new pattern based on last word
-                threeWords = returnPattern(lastWord);
+                threeWords = returnPattern(lastWord: lastWord);
                 
                 // create sentence, then use checkNotGreat
-                tempResponse.addSentence(threeWords);
+                tempResponse.addSentence(s: threeWords);
                 
                 // check if this sentence seems not great
-                checkNotGreat(tempResponse);
-                terminate = terminator(threeWords);
+                checkNotGreat(s: tempResponse);
+                terminate = terminator(s: threeWords);
             } while (!terminate);
             
             return tempResponse;
@@ -490,18 +512,18 @@ class Daisy {
         // -All lower case
         // -If Daisy's name appears, replace it with user's name
         // -Get rid of spaces at start
-        var retVal = Sentence();
+        let retVal = Sentence();
         
         for word in sentence.getWords() {
             // convert to lower case
-            var newWord = word.lowercaseString;
+            var newWord = word.lowercased();
             
             // check for daisy's name
-            if newWord == daisyName.lowercaseString {
+            if newWord == daisyName.lowercased() {
                 newWord = userName;
             }
             
-            retVal.addWord(newWord);
+            retVal.addWord(word: newWord);
             
         }
         
@@ -510,65 +532,68 @@ class Daisy {
     
     func saveMemory() {
         // Save current memory to file
-        
         let file = "daisy.bfb"
         
-        if let dirs : [String] = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.AllDomainsMask, true) as? [String] {
-            let dir = dirs[0] //documents directory
-            let path = dir.stringByAppendingPathComponent(file);
+        if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
             var text = ""
             
+            let fileURL = dir.appendingPathComponent(file)
+
             //writing
-            for sentence in memory {
-                for word in sentence.getWords() {
-                    text = text + word + "\n";
+            do {
+                for sentence in memory {
+                    for word in sentence.getWords() {
+                        text = text + word + "\n";
+                    }
+                    text = text + "***\n";
                 }
-                text = text + "***\n";
+                
+                try text.write(to: fileURL, atomically: false, encoding: .utf8)
             }
-            text.writeToFile(path, atomically: false, encoding: NSUTF8StringEncoding, error: nil);
-            
+            catch {/* error handling here */}
         }
     }
     
     func loadMemory() {
         // Load memory from file
-        let file = "daisy.bfb"
+        let file = "daisy.bfb";
         
-        if let dirs : [String] = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.AllDomainsMask, true) as? [String] {
-            let dir = dirs[0] //documents directory
-            let path = dir.stringByAppendingPathComponent(file);
-      
+        // For reading inside the bundle: Bundle.main.path(forResource: file, ofType: "bfb")
+        if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+
+            let fileURL = dir.appendingPathComponent(file);
+
             //reading
-             let text2 = String(contentsOfFile: path, encoding: NSUTF8StringEncoding, error: nil)
-         
-     
-            
-            if let list = text2?.componentsSeparatedByString("\n") {
+            do {
+                let text2 = try String(contentsOf: fileURL, encoding: .utf8)
+                
+                let myStrings = text2.components(separatedBy: .newlines)
                 var s = Sentence();
-                for line in list {
+                for line in myStrings {
                     if (line == "***") {
                         // found end of one sentence
                         memory.append(s);
                         s = Sentence();
                     } else {
                         // keep building
-                        s.addWord(line);
+                        s.addWord(word: line);
                     }
                 }
             }
+            catch {/* error handling here */}
         }
 
     }
     
     // Handles the work of generating a response, given a user input
     func getResponse(input :String) -> String {
-        var sentence = parse(input);
+        let sentence = parse(input: input);
         
 
         
-        learn(sentence);
+        learn(sentence: sentence);
         
-        var myResponse = okay(bestResponse(sentence));
+        let myResponse = okay(sentence: bestResponse(sentence: sentence));
         
         return myResponse.getString();
     }
